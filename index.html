@@ -96,6 +96,10 @@
             --card-color: #f59e0b;
         }
 
+        .card.letter-card {
+            --card-color: #8b5cf6;
+        }
+
         .card-icon {
             width: 80px;
             height: 80px;
@@ -269,6 +273,16 @@
                 </a>
             </div>
 
+            <div class="card letter-card">
+                <div class="card-icon">📝</div>
+                <span class="card-tag">감정 분석</span>
+                <h3>정서 4분면 마음 편지</h3>
+                <p>감정의 에너지와 방향을 4분면으로 분석하고, 나에게 따뜻한 마음 편지를 써보는 활동입니다. 과학적 접근으로 감정을 이해해보세요.</p>
+                <a href="https://plusiam.github.io/maum-letter/" target="_blank" class="card-button">
+                    💻 활동지 바로가기
+                </a>
+            </div>
+
             <div class="card friendship-card">
                 <div class="card-icon">🤝</div>
                 <span class="card-tag">관계 형성</span>
@@ -326,6 +340,11 @@
                 <h4>기록과 성찰</h4>
                 <p>PDF 저장으로 지속적인 성장 추적</p>
             </div>
+            <div class="feature">
+                <div class="feature-icon">🧪</div>
+                <h4>과학적 접근</h4>
+                <p>심리학 이론 기반의 체계적 감정 분석</p>
+            </div>
         </div>
 
         <footer class="footer">
@@ -361,7 +380,7 @@
                     feature.style.transition = 'all 0.5s ease';
                     feature.style.opacity = '1';
                     feature.style.transform = 'translateY(0)';
-                }, 1000 + index * 100);
+                }, 1200 + index * 100);
             });
         });
 
