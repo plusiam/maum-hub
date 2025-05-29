@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>정서조절 웹학습지 모음</title>
+    <meta name="description" content="마음을 다스리고 감정을 조절하는 다양한 활동을 통해 건강한 정서 발달을 도와주는 학습 도구 모음">
     <style>
         * {
             margin: 0;
@@ -85,6 +86,14 @@
 
         .card.abc-card {
             --card-color: #45b7d1;
+        }
+
+        .card.growth-card {
+            --card-color: #10b981;
+        }
+
+        .card.friendship-card {
+            --card-color: #f59e0b;
         }
 
         .card-icon {
@@ -207,6 +216,19 @@
             position: absolute;
             left: 0;
         }
+
+        /* 새로 추가된 카드들을 위한 스타일 개선 */
+        .card-tag {
+            display: inline-block;
+            background: var(--card-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -229,6 +251,7 @@
         <div class="cards-grid">
             <div class="card mind-card">
                 <div class="card-icon">🎯</div>
+                <span class="card-tag">개인 성찰</span>
                 <h3>나만의 마음 비법 만들기</h3>
                 <p>자신만의 특별한 마음 관리 방법을 발견하고 정리해보는 활동입니다. 개인의 성향과 상황에 맞는 맞춤형 정서조절 전략을 만들어보세요.</p>
                 <a href="https://plusiam.github.io/my-mind-card" target="_blank" class="card-button">
@@ -236,8 +259,29 @@
                 </a>
             </div>
 
+            <div class="card growth-card">
+                <div class="card-icon">🌱</div>
+                <span class="card-tag">ABC 모델</span>
+                <h3>쑥쑥! 마음 성장 노트</h3>
+                <p>속상했던 일을 되돌아보며 생각과 감정의 연결고리를 찾아보는 성찰 활동입니다. ABC 모델을 통해 건강한 사고 패턴을 기를 수 있어요.</p>
+                <a href="https://plusiam.github.io/heart-growth/" target="_blank" class="card-button">
+                    💻 활동지 바로가기
+                </a>
+            </div>
+
+            <div class="card friendship-card">
+                <div class="card-icon">🤝</div>
+                <span class="card-tag">관계 형성</span>
+                <h3>친구와 함께 만드는 우정 레시피</h3>
+                <p>요리 레시피처럼 우정을 만드는 특별한 재료와 방법을 담은 카드를 만들어보세요. 친구와의 소중한 추억을 기록하고 나눌 수 있어요.</p>
+                <a href="https://plusiam.github.io/friendship-recipe/" target="_blank" class="card-button">
+                    💻 활동지 바로가기
+                </a>
+            </div>
+
             <div class="card recipe-card">
                 <div class="card-icon">🍳</div>
+                <span class="card-tag">창의 활동</span>
                 <h3>나만의 마음 레시피 카드 만들기</h3>
                 <p>요리 레시피처럼 행복과 긍정적인 마음을 만드는 나만의 레시피를 작성해보는 창의적인 활동입니다. 일상 속 작은 행복을 찾아보세요.</p>
                 <a href="https://plusiam.github.io/my-happy-recipe/" target="_blank" class="card-button">
@@ -247,6 +291,7 @@
 
             <div class="card abc-card">
                 <div class="card-icon">🔄</div>
+                <span class="card-tag">인지 전환</span>
                 <h3>ABC 생각 바꾸기</h3>
                 <p>인지행동치료의 ABC 모델을 활용하여 부정적인 생각을 긍정적으로 바꾸는 연습을 합니다. 상황-생각-감정의 연결고리를 이해해보세요.</p>
                 <a href="https://plusiam.github.io/abc-think/" target="_blank" class="card-button">
@@ -276,6 +321,11 @@
                 <h4>교육 목표 달성</h4>
                 <p>체계적인 정서조절 능력 향상 프로그램</p>
             </div>
+            <div class="feature">
+                <div class="feature-icon">📋</div>
+                <h4>기록과 성찰</h4>
+                <p>PDF 저장으로 지속적인 성장 추적</p>
+            </div>
         </div>
 
         <footer class="footer">
@@ -299,7 +349,7 @@
                     card.style.transition = 'all 0.6s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
-                }, index * 200);
+                }, index * 150);
             });
             
             // 특징 섹션 애니메이션
@@ -311,7 +361,7 @@
                     feature.style.transition = 'all 0.5s ease';
                     feature.style.opacity = '1';
                     feature.style.transform = 'translateY(0)';
-                }, 800 + index * 100);
+                }, 1000 + index * 100);
             });
         });
 
@@ -333,6 +383,17 @@
             const rate = scrolled * -0.5;
             
             header.style.transform = `translateY(${rate}px)`;
+        });
+
+        // 카드 호버 시 추가 효과
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
         });
     </script>
 </body>
