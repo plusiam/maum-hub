@@ -112,6 +112,10 @@
             --card-color: #ff7f50;
         }
 
+        .card.family-love-coupon-card {
+            --card-color: #ff1744;
+        }
+
         .card-icon {
             width: 80px;
             height: 80px;
@@ -245,6 +249,31 @@
             margin-bottom: 10px;
             opacity: 0.9;
         }
+
+        /* 새로운 카드 강조 효과 */
+        .card.new {
+            position: relative;
+        }
+
+        .card.new::after {
+            content: 'NEW!';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff1744;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -281,6 +310,16 @@
                 <h3>쑥쑥! 마음 성장 노트</h3>
                 <p>속상했던 일을 되돌아보며 생각과 감정의 연결고리를 찾아보는 성찰 활동입니다. ABC 모델을 통해 건강한 사고 패턴을 기를 수 있어요.</p>
                 <a href="https://plusiam.github.io/heart-growth/" target="_blank" class="card-button">
+                    💻 활동지 바로가기
+                </a>
+            </div>
+
+            <div class="card family-love-coupon-card new">
+                <div class="card-icon">🏷️</div>
+                <span class="card-tag">가족 사랑</span>
+                <h3>가족 사랑 쿠폰 만들기</h3>
+                <p>가족에 대한 감사와 사랑을 표현하는 특별한 쿠폰을 만들어보세요. 실천 후 효도 일기를 작성하며 가족 유대감을 깊이 있게 형성할 수 있어요.</p>
+                <a href="https://plusiam.github.io/family-love-coupon-app/" target="_blank" class="card-button">
                     💻 활동지 바로가기
                 </a>
             </div>
