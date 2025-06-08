@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프리미엄 긍정 카드 메이커 v3.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .font-handwriting { font-family: 'Gaegu', cursive; }
+        .font-dodum { font-family: 'Gowun Dodum', sans-serif; }
+        .roulette-needle { transform-origin: bottom center; transition: transform 2s cubic-bezier(0.25, 1, 0.5, 1); }
+        
+        [contenteditable=true]:empty:before {
+            content: attr(placeholder);
+            pointer-events: none;
+            display: block;
+            color: #9ca3af;
+        }
+        
+        .template-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .template-card.selected {
+            ring: 3px;
+            ring-color: #3b82f6;
+            transform: scale(1.05);
+        }
+        
+        .canvas-container {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .image-upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f0f9ff;
+        }
+        
+        .image-upload-area.dragover {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+        }
+        
+        /* 슬롯 애니메이션 */
+        .slot-added { animation: slotPulse 0.6s ease-out; }
+        @keyframes slotPulse {
+            0% { background-color: #dcfce7; transform: scale(1); }
+            50% { background-color: #bbf7d0; transform: scale(1.02); }
+            100% { background-color: #f9fafb; transform: scale(1); }
+        }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 템플릿 배경들 */
+        .template-pastel { background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #dbeafe 100%); }
+        .template-sunrise { background: linear-gradient(135deg, #fed7aa 0%, #fecaca 50%, #fde68a 100%); }
+        .template-ocean { background: linear-gradient(135deg, #bfdbfe 0%, #a7f3d0 50%, #c7d2fe 100%); }
+        .template-pink { background: linear-gradient(135deg, #fce7f3 0%, #fed7e2 50%, #fef3c7 100%); }
+        .template-nature { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #fef3c7 100%); }
+        .template-purple { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #fce7f3 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-800 font-handwriting">💌 프리미엄 긍정 카드 메이커</h1>
+                    <p class="text-lg text-gray-600 mt-2">아름다운 템플릿과 이미지로 나만의 특별한 카드를 만들어보세요</p>
+                </div>
+                <a href="../" class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors font-medium">
+                    🏠 마음허브로 돌아가기
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            
+            <!-- 왼쪽: 메시지 뽑기 & 조합 -->
+            <div class="xl:col-span-2 space-y-6">
+                
+                <!-- 메시지 뽑기 섹션 -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">🎲 행운의 메시지 뽑기</h2>
+                    <div class="text-center space-y-4">
+                        <div class="relative w-48 h-48 mx-auto bg-gradient-to-br from-yellow-200 via-pink-200 to-sky-200 rounded-full flex items-center justify-center shadow-inner">
+                            <div id="roulette-needle" class="roulette-needle absolute w-2 h-24 bg-red-500 rounded-t-full bottom-1/2 shadow-lg border-2 border-white"></div>
+                            <div class="w-8 h-8 bg-white rounded-full z-10 border-4 border-red-500"></div>
+                        </div>
+                        <button id="btn-spin" class="bg-green-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-green-600 transition-colors text-xl shadow-md font-handwriting">🍀 메시지 뽑기</button>
+                        <div class="bg-gray-50 p-4 rounded-xl min-h-[6rem] flex items-center justify-center text-center">
+                            <p id="todays-phrase" class="text-2xl text-gray-800 font-medium font-dodum">버튼을 눌러 시작하세요!</p>
+                        </div>
+                        <button id="btn-add-phrase" class="hidden bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors text-lg shadow font-handwriting">➕ 이 문구 추가하기</button>
+                    </div>
+                </div>
+
+                <!-- 조합 카드 섹션 -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-4">📝 나만의 조합 카드 <span id="slot-status" class="text-gray-500 font-normal">(0/5)</span></h2>
+                    <div id="combination-box" class="space-y-3"></div>
+                </div>
+
+                <!-- 카드 설정 섹션 -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-4">⚙️ 카드 설정</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="input-to" class="block text-gray-700 font-medium mb-2">받는 사람:</label>
+                            <input type="text" id="input-to" placeholder="예: 소중한 나에게" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        </div>
+                        <div>
+                            <label for="input-from" class="block text-gray-700 font-medium mb-2">보내는 사람:</label>
+                            <input type="text" id="input-from" placeholder="예: 너의 좋은 친구" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        </div>
+                    </div>
+
+                    <!-- 템플릿 선택 -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-3">템플릿 선택:</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="template-selection">
+                            <div class="template-card template-pastel w-full h-20 rounded-lg border-2 border-gray-200" data-template="pastel">
+                                <div class="w-full h-full rounded-lg flex items-center justify-center text-sm font-medium text-gray-700">파스텔 드림</div>
+                            </div>
+                            <div class="template-card template-sunrise w-full h-20 rounded-lg border-2 border-gray-200" data-template="sunrise">
+                                <div class="w-full h-full rounded-lg flex items-center justify-center text-sm font-medium text-gray-700">따뜻한 일출</div>
+                            </div>
+                            <div class="template-card template-ocean w-full h-20 rounded-lg border-2 border-gray-200" data-template="ocean">
+                                <div class="w-full h-full rounded-lg flex items-center justify-center text-sm font-medium text-gray-700">청량한 바다</div>
+                            </div>
+                            <div class="template-card template-pink w-full h-20 rounded-lg border-2 border-gray-200" data-template="pink">
+                                <div class="w-full h-full rounded-lg flex items-center justify-center text-sm font-medium text-gray-700">로맨틱 핑크</div>
+                            </div>
+                            <div class="template-card template-nature w-full h-20 rounded-lg border-2 border-gray-200" data-template="nature">
+                                <div class="w-full h-full rounded-lg flex items-center justify-center text-sm font-medium text-gray-700">자연 그린</div>
+                            </div>
+                            <div class="template-card template-purple w-full h-20 rounded-lg border-2 border-gray-200" data-template="purple">
+                                <div class="w-full h-full rounded-lg flex items-center justify-center text-sm font-medium text-gray-700">우아한 퍼플</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 이미지 업로드 -->
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-medium mb-3">배경 이미지 (선택사항):</label>
+                        <div id="image-upload-area" class="image-upload-area p-8 text-center">
+                            <input type="file" id="image-input" class="hidden" accept="image/*">
+                            <div id="upload-placeholder">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                <p class="text-gray-600">클릭하거나 이미지를 드래그해서 업로드하세요</p>
+                                <p class="text-sm text-gray-400 mt-2">JPG, PNG 파일 지원</p>
+                            </div>
+                            <div id="image-preview" class="hidden">
+                                <img id="preview-img" class="max-w-full max-h-32 mx-auto rounded-lg">
+                                <button id="remove-image" class="mt-2 text-red-500 hover:text-red-700 text-sm">✕ 이미지 제거</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 실시간 미리보기 -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg sticky top-8">
+                <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">🖼️ 실시간 미리보기</h2>
+                
+                <div class="canvas-container mb-4">
+                    <canvas id="preview-canvas" width="400" height="600" class="w-full h-auto rounded-lg"></canvas>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="btn-download" class="w-full bg-purple-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors text-lg shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed font-handwriting" disabled>📥 이미지로 다운로드</button>
+                    <button id="btn-create-new" class="w-full bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors font-handwriting">🔄 새로 만들기</button>
+                </div>
+
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h3 class="font-bold text-blue-800 mb-2">💡 제작 가이드</h3>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• 룰렛으로 영감을 받아보세요</li>
+                        <li>• 여러 메시지를 조합해보세요</li>
+                        <li>• 템플릿을 선택하고 이미지를 추가하세요</li>
+                        <li>• 완성된 카드를 이미지로 저장하세요</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const positivePhrases = ["나는 세상에서 가장 소중한 존재야.", "있는 그대로의 너를 사랑해.", "너의 존재는 그 자체로 선물이야.", "스스로를 따뜻하게 안아주자.", "나의 마음과 하이파이브!", "내 마음의 행복한 주인은 바로 나야.", "너는 혼자가 아니야, 주위를 둘러봐.", "너 자신을 믿어봐, 넌 생각보다 강해.", "다른 사람과 비교하지 않아도 괜찮아.", "너의 모든 순간을 응원해.", "나는 나의 가장 좋은 친구야.", "내 마음의 소리에 귀 기울여주자.", "오늘 하루도 수고한 나에게 '고마워'.", "나의 감정은 모두 소중하고 의미있어.", "나를 위한 작은 휴식 시간을 선물하자.", "너는 충분히 사랑받을 자격이 있어.", "생각을 바꾸면, 기분도 바꿀 수 있어.", "'그래도 좋아!'라고 외쳐봐.", "매일 행복하진 않지만, 행복한 일은 매일 있어.", "걱정 대신 기대를 채워보자.", "문제 속에 숨겨진 기회를 찾아봐.", "비가 와도 좋아, 맑아도 좋아.", "괜찮아, 방법은 언제나 있어.", "모든 것에는 긍정적인 면이 숨어있어.", "나에게 힘을 주는 긍정 메시지를 만들어봐.", "웃으면 기분도 좋아진대.", "모든 일은 생각하기 나름이야.", "하늘 한번 보고 크게 숨 쉬어봐.", "걱정 구름을 훅~ 불어서 날려버리자.", "마음속에 긍정 에너지를 가득 채워봐!", "'할 수 없다'는 생각 대신 '어떻게 할까?'를 생각하자.", "실수해도 괜찮아, 그것도 배우는 과정이야.", "넘어져도 괜찮아, 툭툭 털고 일어나자.", "지금의 어려움은 너를 더 단단하게 만들 거야.", "바꿀 수 없는 일은 쿨하게 받아들이자.", "작은 성공 하나를 스스로 축하해주자.", "잘했고, 잘하고 있고, 앞으로도 잘 될 거야.", "포기하지 않는 너의 모습이 가장 멋져.", "너의 가능성은 무한대야.", "어제의 너보다 한 뼘 더 성장했어.", "두려워도 괜찮아, 그건 용기의 첫걸음이니까.", "괜찮아, 지금 속도도 충분히 멋져.", "작은 물방울이 모여 바위를 뚫는 법이야.", "아주 작은 씨앗이 큰 나무가 될 수 있어.", "흔들려도 괜찮아, 꺾이지만 않으면 돼.", "새로운 도전을 즐겨봐, 넌 할 수 있어!", "너의 꿈을 향해 오늘 한 걸음 더!", "배움에는 끝이 없어, 즐겁게 탐험하자!", "어제의 실수는 오늘의 지혜가 될 거야.", "너의 가능성은 별들처럼 많아.", "모르는 건 부끄러운 게 아니야, 물어볼 수 있는 용기!", "오늘 내가 할 수 있는 작은 일 하나를 해보자.", "너의 호기심을 따라가 봐.", "완벽하지 않아도 괜찮아, 과정이 중요해.", "너만의 색깔로 세상을 칠해봐.", "한계를 정하는 사람은 너 자신뿐이야.", "너는 너의 이야기를 만들어가는 주인공이야.", "오늘은 어떤 신나는 일을 만들어볼까?", "새로운 길을 가는 것을 두려워하지 마.", "작은 노력이 모여 큰 변화를 이룬다.", "친구에게 따뜻한 말 한마디를 건네봐.", "'고마워', '미안해'라고 표현하는 용기.", "힘들 땐 '도와줘!'라고 말해도 괜찮아.", "함께하면 더 즐겁고, 힘은 반으로 줄어.", "너의 마음을 솔직하게 보여줘.", "우리는 서로에게 힘이 되는 존재야.", "친구의 마음에 공감해주자.", "너의 이야기를 귀 기울여 들어줄게.", "우리 같이 해볼까?", "너와 함께라서 기뻐.", "친구의 좋은 점을 발견하고 칭찬해주자.", "너의 진심은 분명 통할 거야.", "우리 사이의 믿음은 가장 큰 힘이야.", "먼저 웃으며 인사해볼까?", "우리는 같은 편이야.", "오늘 하늘은 무슨 색이었어?", "맛있는 간식을 먹는 행복을 즐겨봐.", "좋아하는 노래를 크게 따라 불러봐.", "햇살 좋은 날, 잠시 창밖을 바라보는 여유.", "오늘 너를 웃게 한 일은 뭐였어?", "푹신한 이불 속에서 뒹굴뒹굴~", "시원한 바람이 기분 좋게 느껴지는 순간.", "내가 좋아하는 향기를 맡아봐.", "작은 식물에 물을 주며 생명을 느껴봐.", "오늘 하루, 나에게 작은 선물을 해보자.", "창문으로 들어오는 햇살을 느껴봐.", "좋아하는 캐릭터 그림을 그려볼까?", "멍하니 구름 모양을 상상해봐.", "사각사각 연필 소리에 집중해봐.", "책의 새로운 페이지를 넘기는 설렘.", "오늘 먹고 싶은 거 있어? 맛있게 먹자!", "정리된 책상을 보며 뿌듯해하기.", "빗소리를 들으며 좋아하는 책 읽기.", "친구와 눈 마주치며 웃기.", "갓 나온 빵 냄새 맡기.", "보들보들한 담요의 감촉 느끼기.", "시원한 물 한 잔 마시기.", "오늘 감사한 일 3가지를 떠올려봐.", "너의 하루가 별처럼 반짝이길.", "행복은 멀리 있지 않아, 바로 여기 있어."];
+        const MAX_SLOTS = 5;
+
+        // 템플릿 정의
+        const templates = {
+            pastel: {
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #dbeafe 100%)',
+                textColor: '#374151'
+            },
+            sunrise: {
+                background: 'linear-gradient(135deg, #fed7aa 0%, #fecaca 50%, #fde68a 100%)',
+                textColor: '#451a03'
+            },
+            ocean: {
+                background: 'linear-gradient(135deg, #bfdbfe 0%, #a7f3d0 50%, #c7d2fe 100%)',
+                textColor: '#1e3a8a'
+            },
+            pink: {
+                background: 'linear-gradient(135deg, #fce7f3 0%, #fed7e2 50%, #fef3c7 100%)',
+                textColor: '#831843'
+            },
+            nature: {
+                background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #fef3c7 100%)',
+                textColor: '#14532d'
+            },
+            purple: {
+                background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #fce7f3 100%)',
+                textColor: '#581c87'
+            }
+        };
+
+        // --- DOM 요소 ---
+        const needle = document.getElementById('roulette-needle');
+        const btnSpin = document.getElementById('btn-spin');
+        const todaysPhrase = document.getElementById('todays-phrase');
+        const btnAddPhrase = document.getElementById('btn-add-phrase');
+        const combinationBox = document.getElementById('combination-box');
+        const slotStatus = document.getElementById('slot-status');
+        const inputTo = document.getElementById('input-to');
+        const inputFrom = document.getElementById('input-from');
+        const btnDownload = document.getElementById('btn-download');
+        const btnCreateNew = document.getElementById('btn-create-new');
+        const canvas = document.getElementById('preview-canvas');
+        const ctx = canvas.getContext('2d');
+        const templateSelection = document.getElementById('template-selection');
+        const imageInput = document.getElementById('image-input');
+        const imageUploadArea = document.getElementById('image-upload-area');
+        const uploadPlaceholder = document.getElementById('upload-placeholder');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        const removeImageBtn = document.getElementById('remove-image');
+
+        // --- 상태 관리 ---
+        let selectedPhrases = new Array(MAX_SLOTS).fill('');
+        let isSpinning = false;
+        let currentDrawnPhrase = '';
+        let selectedTemplate = 'pastel';
+        let backgroundImage = null;
+
+        // --- 유틸리티 함수 ---
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            for (let word of words) {
+                const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                const metrics = ctx.measureText(testLine);
+                
+                if (metrics.width > maxWidth && currentLine !== '') {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+
+            // 텍스트 그리기
+            const totalHeight = lines.length * lineHeight;
+            const startY = y - (totalHeight / 2) + (lineHeight / 2);
+            
+            lines.forEach((line, index) => {
+                ctx.fillText(line, x, startY + (index * lineHeight));
+            });
+
+            return lines.length;
+        }
+
+        function getOptimalFontSize(ctx, texts, maxWidth, maxHeight) {
+            let fontSize = 48;
+            const minFontSize = 16;
+            const lineHeight = fontSize * 1.4;
+            
+            while (fontSize > minFontSize) {
+                ctx.font = `${fontSize}px 'Gowun Dodum', sans-serif`;
+                
+                let totalHeight = 0;
+                let maxTextWidth = 0;
+                
+                for (let text of texts) {
+                    const words = text.split(' ');
+                    let currentLine = '';
+                    let lineCount = 0;
+                    
+                    for (let word of words) {
+                        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                        const metrics = ctx.measureText(testLine);
+                        
+                        if (metrics.width > maxWidth && currentLine !== '') {
+                            lineCount++;
+                            maxTextWidth = Math.max(maxTextWidth, ctx.measureText(currentLine).width);
+                            currentLine = word;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    if (currentLine) {
+                        lineCount++;
+                        maxTextWidth = Math.max(maxTextWidth, ctx.measureText(currentLine).width);
+                    }
+                    
+                    totalHeight += lineCount * (fontSize * 1.4) + 20; // 메시지 간 간격
+                }
+                
+                if (totalHeight <= maxHeight && maxTextWidth <= maxWidth) {
+                    return fontSize;
+                }
+                
+                fontSize -= 2;
+            }
+            
+            return minFontSize;
+        }
+
+        // --- 캔버스 렌더링 ---
+        function renderCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 배경 그리기
+            if (backgroundImage) {
+                // 이미지 배경
+                const img = new Image();
+                img.onload = function() {
+                    // 이미지를 캔버스에 맞게 조정
+                    const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+                    const scaledWidth = img.width * scale;
+                    const scaledHeight = img.height * scale;
+                    const x = (canvas.width - scaledWidth) / 2;
+                    const y = (canvas.height - scaledHeight) / 2;
+                    
+                    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+                    
+                    // 반투명 오버레이
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    renderTextContent();
+                };
+                img.src = backgroundImage;
+            } else {
+                // 그라데이션 배경
+                const template = templates[selectedTemplate];
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                
+                // CSS 그라데이션을 Canvas 그라데이션으로 변환
+                if (selectedTemplate === 'pastel') {
+                    gradient.addColorStop(0, '#fef3c7');
+                    gradient.addColorStop(0.5, '#fce7f3');
+                    gradient.addColorStop(1, '#dbeafe');
+                } else if (selectedTemplate === 'sunrise') {
+                    gradient.addColorStop(0, '#fed7aa');
+                    gradient.addColorStop(0.5, '#fecaca');
+                    gradient.addColorStop(1, '#fde68a');
+                } else if (selectedTemplate === 'ocean') {
+                    gradient.addColorStop(0, '#bfdbfe');
+                    gradient.addColorStop(0.5, '#a7f3d0');
+                    gradient.addColorStop(1, '#c7d2fe');
+                } else if (selectedTemplate === 'pink') {
+                    gradient.addColorStop(0, '#fce7f3');
+                    gradient.addColorStop(0.5, '#fed7e2');
+                    gradient.addColorStop(1, '#fef3c7');
+                } else if (selectedTemplate === 'nature') {
+                    gradient.addColorStop(0, '#d1fae5');
+                    gradient.addColorStop(0.5, '#a7f3d0');
+                    gradient.addColorStop(1, '#fef3c7');
+                } else if (selectedTemplate === 'purple') {
+                    gradient.addColorStop(0, '#e0e7ff');
+                    gradient.addColorStop(0.5, '#c7d2fe');
+                    gradient.addColorStop(1, '#fce7f3');
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                renderTextContent();
+            }
+        }
+
+        function renderTextContent() {
+            const template = templates[selectedTemplate];
+            ctx.fillStyle = template.textColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const toText = inputTo.value || "소중한 당신에게";
+            const fromText = inputFrom.value || "마음을 담아";
+            const messages = selectedPhrases.filter(p => p && p.trim() !== '');
+            
+            // 텍스트 배치
+            const margin = 40;
+            const topAreaHeight = 80;
+            const bottomAreaHeight = 80;
+            const messageAreaHeight = canvas.height - topAreaHeight - bottomAreaHeight - (margin * 2);
+            
+            // 받는 사람 (상단)
+            ctx.font = '28px "Gowun Dodum", sans-serif';
+            ctx.fillText(toText, canvas.width / 2, margin + topAreaHeight / 2);
+            
+            // 보내는 사람 (하단)
+            ctx.fillText(fromText, canvas.width / 2, canvas.height - margin - bottomAreaHeight / 2);
+            
+            // 메시지들 (중앙)
+            if (messages.length > 0) {
+                const maxWidth = canvas.width - (margin * 2);
+                const fontSize = getOptimalFontSize(ctx, messages, maxWidth, messageAreaHeight);
+                ctx.font = `${fontSize}px "Gowun Dodum", sans-serif`;
+                
+                const lineHeight = fontSize * 1.4;
+                const messageSpacing = 30;
+                const startY = margin + topAreaHeight + (messageAreaHeight / 2);
+                
+                // 총 높이 계산
+                let totalHeight = 0;
+                const lineCounts = messages.map(message => {
+                    const words = message.split(' ');
+                    let currentLine = '';
+                    let lineCount = 0;
+                    
+                    for (let word of words) {
+                        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                        const metrics = ctx.measureText(testLine);
+                        
+                        if (metrics.width > maxWidth && currentLine !== '') {
+                            lineCount++;
+                            currentLine = word;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+                    if (currentLine) lineCount++;
+                    return lineCount;
+                });
+                
+                totalHeight = lineCounts.reduce((sum, count) => sum + count * lineHeight, 0) + 
+                             (messages.length - 1) * messageSpacing;
+                
+                let currentY = startY - (totalHeight / 2);
+                
+                messages.forEach((message, index) => {
+                    const messageLines = lineCounts[index];
+                    const messageHeight = messageLines * lineHeight;
+                    
+                    // 커스텀 메시지 스타일
+                    const isCustom = (selectedPhrases.indexOf(message) === MAX_SLOTS - 1);
+                    if (isCustom) {
+                        ctx.fillStyle = '#0d9488';
+                        ctx.font = `italic ${fontSize}px "Gowun Dodum", sans-serif`;
+                    } else {
+                        ctx.fillStyle = template.textColor;
+                        ctx.font = `${fontSize}px "Gowun Dodum", sans-serif`;
+                    }
+                    
+                    wrapText(ctx, message, canvas.width / 2, currentY + messageHeight / 2, maxWidth, lineHeight);
+                    currentY += messageHeight + messageSpacing;
+                });
+            }
+        }
+
+        // --- 기존 함수들 (수정) ---
+        function renderCombinationSlots() {
+            combinationBox.innerHTML = '';
+            
+            // 일반 슬롯 4개 생성
+            for (let i = 0; i < MAX_SLOTS - 1; i++) {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'slot-item flex items-center gap-3 p-3 bg-gray-50 rounded-lg min-h-[3.5rem] border';
+                slotDiv.setAttribute('data-index', i);
+                slotDiv.innerHTML = `
+                    <span class="font-bold text-lg text-gray-500">${i + 1}.</span>
+                    <p class="slot-content flex-1 text-lg font-dodum text-gray-800 min-h-[1.5rem]"></p>
+                    <button class="clear-btn hidden text-red-400 hover:text-red-600 font-bold text-2xl transition-colors">×</button>
+                `;
+                combinationBox.appendChild(slotDiv);
+            }
+            
+            // 커스텀 입력 슬롯 (5번째)
+            const customSlot = document.createElement('div');
+            customSlot.className = 'slot-item flex items-center gap-3 p-3 bg-teal-50 rounded-lg min-h-[3.5rem] border-2 border-dashed border-teal-400';
+            customSlot.setAttribute('data-index', MAX_SLOTS - 1);
+            customSlot.innerHTML = `
+                <span class="font-bold text-lg text-teal-600">${MAX_SLOTS}.</span>
+                <div class="slot-content custom-editable flex-1 focus:outline-none text-lg font-dodum text-teal-800" 
+                     contenteditable="true" 
+                     placeholder="✨ 여기에 나만의 특별한 메시지를 직접 써보세요! ✨"></div>
+                <button class="clear-btn hidden text-red-400 hover:text-red-600 font-bold text-2xl transition-colors">×</button>
+            `;
+            combinationBox.appendChild(customSlot);
+            
+            addSlotEventListeners();
+            updateCombinationBox();
+        }
+
+        function updateCombinationBox() {
+            let filledSlots = 0;
+            const slotItems = combinationBox.querySelectorAll('.slot-item');
+            
+            slotItems.forEach((slotItem, index) => {
+                const slotContent = slotItem.querySelector('.slot-content');
+                const clearBtn = slotItem.querySelector('.clear-btn');
+                const phrase = selectedPhrases[index];
+                
+                // 내용 업데이트
+                if (slotContent.isContentEditable) {
+                    if (phrase && document.activeElement !== slotContent) {
+                        slotContent.textContent = phrase;
+                    }
+                } else {
+                    slotContent.textContent = phrase || '';
+                }
+
+                // 클리어 버튼 표시/숨김
+                if (phrase && phrase.trim() !== '') {
+                    clearBtn.classList.remove('hidden');
+                    filledSlots++;
+                    slotItem.classList.remove('bg-gray-50');
+                    slotItem.classList.add('bg-green-50', 'border-green-200');
+                } else {
+                    clearBtn.classList.add('hidden');
+                    if (!slotContent.isContentEditable) {
+                        slotItem.classList.remove('bg-green-50', 'border-green-200');
+                        slotItem.classList.add('bg-gray-50');
+                    }
+                }
+            });
+            
+            // 상태 업데이트
+            slotStatus.textContent = `(${filledSlots}/${MAX_SLOTS})`;
+            btnDownload.disabled = selectedPhrases.every(p => !p || p.trim() === '');
+
+            // 추가 버튼 관리
+            const isFull = filledSlots >= MAX_SLOTS;
+            btnAddPhrase.disabled = isFull;
+            if (isFull && currentDrawnPhrase) {
+                btnAddPhrase.classList.add('hidden');
+            }
+            
+            // 캔버스 업데이트
+            renderCanvas();
+        }
+
+        function handleSpin() {
+            if (isSpinning) return;
+            isSpinning = true;
+            currentDrawnPhrase = '';
+            
+            needle.style.transform = `rotate(${Math.random() * 360 + 1080}deg)`;
+            todaysPhrase.textContent = "돌아가는 중...";
+            btnAddPhrase.classList.add('hidden');
+
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * positivePhrases.length);
+                currentDrawnPhrase = positivePhrases[randomIndex];
+                todaysPhrase.textContent = currentDrawnPhrase;
+                isSpinning = false;
+                
+                const filledSlots = selectedPhrases.filter(p => p && p.trim() !== '').length;
+                if (filledSlots < MAX_SLOTS) {
+                    btnAddPhrase.classList.remove('hidden');
+                }
+            }, 2000);
+        }
+
+        function addPhrase() {
+            if (isSpinning || !currentDrawnPhrase) return;
+
+            const firstEmptyIndex = selectedPhrases.findIndex(p => !p || p.trim() === '');
+            if (firstEmptyIndex !== -1) {
+                selectedPhrases[firstEmptyIndex] = currentDrawnPhrase;
+                
+                setTimeout(() => {
+                    const slotItems = combinationBox.querySelectorAll('.slot-item');
+                    const targetSlot = slotItems[firstEmptyIndex];
+                    targetSlot.classList.add('slot-added');
+                    setTimeout(() => {
+                        targetSlot.classList.remove('slot-added');
+                    }, 600);
+                }, 50);
+                
+                updateCombinationBox();
+                
+                btnAddPhrase.textContent = '✅ 추가됨!';
+                btnAddPhrase.disabled = true;
+                setTimeout(() => {
+                    btnAddPhrase.textContent = '➕ 이 문구 추가하기';
+                    btnAddPhrase.disabled = false;
+                    
+                    const filledSlots = selectedPhrases.filter(p => p && p.trim() !== '').length;
+                    if (filledSlots >= MAX_SLOTS) {
+                        btnAddPhrase.classList.add('hidden');
+                    }
+                }, 1000);
+            }
+        }
+        
+        function clearSlot(index) {
+            selectedPhrases[index] = '';
+            
+            if (index === MAX_SLOTS - 1) {
+                const customEditable = document.querySelector('.custom-editable');
+                if (customEditable) {
+                    customEditable.textContent = '';
+                }
+            }
+            
+            updateCombinationBox();
+            
+            if (currentDrawnPhrase && !btnAddPhrase.classList.contains('hidden')) {
+                btnAddPhrase.classList.remove('hidden');
+            }
+        }
+
+        function resetAll() {
+            selectedPhrases = new Array(MAX_SLOTS).fill('');
+            currentDrawnPhrase = '';
+            inputTo.value = '';
+            inputFrom.value = '';
+            todaysPhrase.textContent = "버튼을 눌러 시작하세요!";
+            btnAddPhrase.classList.add('hidden');
+            btnAddPhrase.textContent = '➕ 이 문구 추가하기';
+            btnAddPhrase.disabled = false;
+            
+            // 이미지 초기화
+            backgroundImage = null;
+            imagePreview.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+            
+            const customEditable = document.querySelector('.custom-editable');
+            if (customEditable) {
+                customEditable.textContent = '';
+            }
+            
+            updateCombinationBox();
+        }
+
+        function addSlotEventListeners() {
+            const clearBtns = combinationBox.querySelectorAll('.clear-btn');
+            clearBtns.forEach((btn, index) => {
+                btn.addEventListener('click', () => clearSlot(index));
+            });
+            
+            const customEditable = document.querySelector('.custom-editable');
+            if (customEditable) {
+                customEditable.addEventListener('input', () => {
+                    selectedPhrases[MAX_SLOTS - 1] = customEditable.textContent.trim();
+                    updateCombinationBox();
+                });
+                
+                customEditable.addEventListener('blur', () => {
+                    selectedPhrases[MAX_SLOTS - 1] = customEditable.textContent.trim();
+                    updateCombinationBox();
+                });
+            }
+        }
+
+        function downloadCanvas() {
+            const link = document.createElement('a');
+            link.download = `긍정카드_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // --- 이벤트 리스너 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 기본 템플릿 선택
+            document.querySelector('[data-template="pastel"]').classList.add('selected');
+            
+            btnSpin.addEventListener('click', handleSpin);
+            btnAddPhrase.addEventListener('click', addPhrase);
+            btnDownload.addEventListener('click', downloadCanvas);
+            btnCreateNew.addEventListener('click', resetAll);
+            
+            // 입력 필드 실시간 업데이트
+            inputTo.addEventListener('input', renderCanvas);
+            inputFrom.addEventListener('input', renderCanvas);
+            
+            // 템플릿 선택
+            templateSelection.addEventListener('click', (e) => {
+                const templateCard = e.target.closest('.template-card');
+                if (templateCard) {
+                    document.querySelectorAll('.template-card').forEach(card => 
+                        card.classList.remove('selected'));
+                    templateCard.classList.add('selected');
+                    selectedTemplate = templateCard.dataset.template;
+                    renderCanvas();
+                }
+            });
+            
+            // 이미지 업로드
+            imageUploadArea.addEventListener('click', () => imageInput.click());
+            imageInput.addEventListener('change', handleImageUpload);
+            removeImageBtn.addEventListener('click', removeImage);
+            
+            // 드래그 앤 드롭
+            imageUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUploadArea.classList.add('dragover');
+            });
+            
+            imageUploadArea.addEventListener('dragleave', () => {
+                imageUploadArea.classList.remove('dragover');
+            });
+            
+            imageUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageUploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleImageFile(files[0]);
+                }
+            });
+            
+            renderCombinationSlots();
+            renderCanvas();
+        });
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleImageFile(file);
+            }
+        }
+
+        function handleImageFile(file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    backgroundImage = e.target.result;
+                    previewImg.src = backgroundImage;
+                    uploadPlaceholder.classList.add('hidden');
+                    imagePreview.classList.remove('hidden');
+                    renderCanvas();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            backgroundImage = null;
+            imagePreview.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+            imageInput.value = '';
+            renderCanvas();
+        }
+    </script>
+</body>
+</html>
