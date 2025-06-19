@@ -124,6 +124,10 @@
             --card-color: #ff5722;
         }
 
+        .card.maumbom-card {
+            --card-color: #4CAF50;
+        }
+
         .card-icon {
             width: 80px;
             height: 80px;
@@ -282,6 +286,55 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+
+        /* 관련 프로젝트 섹션 스타일 */
+        .section-title {
+            font-size: 2rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .related-section {
+            margin-bottom: 50px;
+        }
+
+        /* 프로젝트 생태계 스타일 */
+        .project-ecosystem {
+            margin-top: 25px; 
+            padding-top: 20px; 
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .ecosystem-links {
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            gap: 12px;
+        }
+
+        .eco-link {
+            color: white; 
+            text-decoration: none; 
+            background: rgba(255,255,255,0.1); 
+            padding: 8px 15px; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .eco-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .eco-link.current {
+            background: rgba(255,255,255,0.3);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -423,6 +476,22 @@
             </div>
         </div>
 
+        <!-- 관련 프로젝트 섹션 추가 -->
+        <div class="related-section">
+            <h2 class="section-title">🌱 관련 프로젝트</h2>
+            <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+                <div class="card maumbom-card new">
+                    <div class="card-icon">🌿</div>
+                    <span class="card-tag">마음 성장</span>
+                    <h3>마음봄 프로젝트</h3>
+                    <p>마음의 성장과 치유를 돕는 종합 프로젝트입니다. 다양한 활동과 자료를 통해 정서적 웰빙을 지원하고 건강한 마음 형성에 도움을 드립니다.</p>
+                    <a href="https://plusiam.github.io/maumbom-website/" target="_blank" class="card-button">
+                        🌱 마음봄 방문하기
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div class="features">
             <div class="feature">
                 <div class="feature-icon">🎨</div>
@@ -465,6 +534,25 @@
                     </a>
                     <a href="https://www.youtube.com/channel/UCVcgTO7CJaKBSr6FbQxBT1w" target="_blank" style="color: white; text-decoration: none;">
                         <span style="font-size: 1.2rem;">📺 YouTube</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 프로젝트 생태계 섹션 추가 -->
+            <div class="project-ecosystem">
+                <h3 style="margin-bottom: 15px;">🌟 마음성장 프로젝트 생태계</h3>
+                <div class="ecosystem-links">
+                    <a href="https://plusiam.github.io/maum-hub/" class="eco-link current">
+                        <span>🧠</span>
+                        <span>정서조절 웹학습지</span>
+                    </a>
+                    <a href="https://plusiam.github.io/maumbom-website/" class="eco-link">
+                        <span>🌱</span>
+                        <span>마음봄 프로젝트</span>
+                    </a>
+                    <a href="https://plusiam.github.io/widyu-mindfulness-website/" class="eco-link">
+                        <span>🧘</span>
+                        <span>마음챙김 자료실</span>
                     </a>
                 </div>
             </div>
@@ -530,6 +618,17 @@
             
             card.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // 생태계 링크 호버 효과
+        document.querySelectorAll('.eco-link').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
             });
         });
     </script>
