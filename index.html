@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- 정서조절 웹학습지 26종을 모아 보여주는 마음허브 메인 페이지 (도구 목록은 하단 TOOLS 배열에서 관리) -->
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -32,7 +33,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             color: white;
         }
 
@@ -50,6 +51,67 @@
             line-height: 1.6;
         }
 
+        /* 필터 & 검색 바 */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-tab {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 2px solid transparent;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .filter-tab.active {
+            background: white;
+            color: #764ba2;
+        }
+
+        .search-input {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            min-width: 200px;
+            background: rgba(255,255,255,0.9);
+        }
+
+        .search-input:focus {
+            outline: 3px solid rgba(255,255,255,0.6);
+        }
+
+        .no-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 40px 0;
+        }
+
+        .noscript-notice {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -62,9 +124,21 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            animation: cardIn 0.6s ease forwards;
+            animation-delay: calc(min(var(--i, 0), 8) * 90ms);
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card { animation: none; opacity: 1; }
         }
 
         .card:hover {
@@ -80,110 +154,6 @@
             right: 0;
             height: 5px;
             background: var(--card-color);
-        }
-
-        .card.mind-card {
-            --card-color: #ff6b6b;
-        }
-
-        .card.recipe-card {
-            --card-color: #4ecdc4;
-        }
-
-        .card.abc-card {
-            --card-color: #45b7d1;
-        }
-
-        .card.growth-card {
-            --card-color: #10b981;
-        }
-
-        .card.friendship-card {
-            --card-color: #f59e0b;
-        }
-
-        .card.friendship-graph-card {
-            --card-color: #06d6a0;
-        }
-
-        .card.letter-card {
-            --card-color: #8b5cf6;
-        }
-
-        .card.postcard-card {
-            --card-color: #e91e63;
-        }
-
-        .card.invisible-child-card {
-            --card-color: #ff8a65;
-        }
-
-        .card.family-moments-card {
-            --card-color: #ff7f50;
-        }
-
-        .card.family-love-coupon-card {
-            --card-color: #ff1744;
-        }
-
-        .card.positive-card-maker {
-            --card-color: #9333ea;
-        }
-
-        .card.abc-friend-card {
-            --card-color: #ff5722;
-        }
-
-        .card.abc-friend-peer-card {
-            --card-color: #06a4e8;
-        }
-
-        .card.abc-sangdam-card {
-            --card-color: #d946ef;
-        }
-
-        .card.abc-heart-bridge-card {
-            --card-color: #f97316;
-        }
-
-        .card.maumbom-card {
-            --card-color: #4CAF50;
-        }
-
-        .card.munpae-maker-card {
-            --card-color: #ff6f00;
-        }
-
-        .card.family-emotion-graph-card {
-            --card-color: #e91e63;
-        }
-
-        .card.emotion-explorer-card {
-            --card-color: #6366f1;
-        }
-
-        .card.emotion-card-maker {
-            --card-color: #ec4899;
-        }
-
-        .card.bucket-dreams-card {
-            --card-color: #f59e0b;
-        }
-
-        .card.dear-teacher-card {
-            --card-color: #e11d48;
-        }
-
-        .card.dream-recipe-card {
-            --card-color: #0ea5e9;
-        }
-
-        .card.virtue-canvas-card {
-            --card-color: #14b8a6;
-        }
-
-        .card.conflict-thermometer-card {
-            --card-color: #ef4444;
         }
 
         .card-icon {
@@ -224,12 +194,43 @@
             text-align: center;
             font-weight: bold;
             font-size: 1.1rem;
-            transition: all 0.3s ease;
+            transition: opacity 0.2s ease;
         }
 
         .card-button:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
+            opacity: 0.85;
+        }
+
+        .card-button.pressed {
+            animation: press 0.25s ease;
+        }
+
+        @keyframes press {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .card-action-btn {
+            flex: 1;
+            padding: 8px 10px;
+            background: #f3f4f6;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .card-action-btn:hover {
+            background: #e5e7eb;
         }
 
         .features {
@@ -264,12 +265,12 @@
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .cards-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .card {
                 padding: 20px;
             }
@@ -368,7 +369,6 @@
             line-height: 1.5;
         }
 
-        /* 새로 추가된 카드들을 위한 스타일 개선 */
         .card-tag {
             display: inline-block;
             background: var(--card-color);
@@ -379,11 +379,6 @@
             font-weight: bold;
             margin-bottom: 10px;
             opacity: 0.9;
-        }
-
-        /* 새로운 카드 강조 효과 */
-        .card.new {
-            position: relative;
         }
 
         .card.new::after {
@@ -406,7 +401,10 @@
             100% { transform: scale(1); }
         }
 
-        /* 관련 프로젝트 섹션 스타일 */
+        @media (prefers-reduced-motion: reduce) {
+            .card.new::after { animation: none; }
+        }
+
         .section-title {
             font-size: 2rem;
             color: white;
@@ -419,28 +417,27 @@
             margin-bottom: 50px;
         }
 
-        /* 프로젝트 생태계 스타일 */
         .project-ecosystem {
-            margin-top: 25px; 
-            padding-top: 20px; 
+            margin-top: 25px;
+            padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.2);
         }
 
         .ecosystem-links {
-            display: flex; 
-            justify-content: center; 
-            flex-wrap: wrap; 
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
             gap: 12px;
         }
 
         .eco-link {
-            color: white; 
-            text-decoration: none; 
-            background: rgba(255,255,255,0.1); 
-            padding: 8px 15px; 
-            border-radius: 20px; 
-            display: flex; 
-            align-items: center; 
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
             gap: 5px;
             transition: all 0.3s ease;
         }
@@ -455,7 +452,6 @@
             font-weight: bold;
         }
 
-        /* 저작권 안내 스타일 */
         .copyright-notice {
             margin-top: 30px;
             padding-top: 20px;
@@ -472,6 +468,61 @@
             font-size: 1.2rem;
             margin-right: 5px;
         }
+
+        /* QR 모달 */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .qr-modal.open {
+            display: flex;
+        }
+
+        .qr-box {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .qr-box h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .qr-box img {
+            width: 220px;
+            height: 220px;
+            max-width: 100%;
+        }
+
+        .qr-box .qr-url {
+            font-size: 0.8rem;
+            color: #666;
+            word-break: break-all;
+            margin: 12px 0;
+        }
+
+        .qr-close {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -481,312 +532,78 @@
             <p>마음을 다스리고 감정을 조절하는 다양한 활동을 통해 건강한 정서 발달을 도와주는 학습 도구입니다.</p>
         </header>
 
-        <!-- 정서조절 학습의 중요성 섹션을 서비스 특징 및 이용 안내로 변경 -->
+        <nav class="filter-bar" id="filter-bar" aria-label="도구 카테고리 필터">
+            <button class="filter-tab active" data-category="all">전체</button>
+            <button class="filter-tab" data-category="emotion">감정 알기</button>
+            <button class="filter-tab" data-category="relation">관계·소통</button>
+            <button class="filter-tab" data-category="abc">ABC 상담</button>
+            <button class="filter-tab" data-category="self">나 탐구</button>
+            <input type="search" class="search-input" id="search-input" placeholder="🔍 도구 이름 검색" aria-label="도구 검색">
+        </nav>
+
+        <noscript>
+            <div class="noscript-notice">
+                이 페이지의 도구 목록을 보려면 자바스크립트를 켜 주세요.
+                도구 전체 목록은 <a href="https://github.com/plusiam/maum-hub#-도구-카탈로그">README 카탈로그</a>에서도 확인할 수 있습니다.
+            </div>
+        </noscript>
+
+        <div class="cards-grid" id="cards-grid"></div>
+
+        <!-- 관련 프로젝트 섹션 -->
+        <div class="related-section">
+            <h2 class="section-title">🌱 관련 프로젝트</h2>
+            <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+                <div class="card" style="--card-color: #4CAF50; --i: 0">
+                    <div class="card-icon">🌿</div>
+                    <span class="card-tag">마음 성장</span>
+                    <h3>마음봄 프로젝트</h3>
+                    <p>마음의 성장과 치유를 돕는 종합 프로젝트입니다. 다양한 활동과 자료를 통해 정서적 웰빙을 지원하고 건강한 마음 형성에 도움을 드립니다.</p>
+                    <a href="https://plusiam.github.io/maumbom-website/" target="_blank" rel="noopener noreferrer" class="card-button">
+                        🌱 마음봄 방문하기
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 서비스 특징 및 이용 안내 -->
         <div class="intro-section">
             <h2>✨ 서비스 특징 및 이용 안내</h2>
-            
+
             <div class="service-features">
                 <div class="service-feature">
                     <div class="service-icon">📱</div>
                     <div class="service-title">모든 기기에서 사용 가능</div>
                     <div class="service-desc">PC, 태블릿, 스마트폰 등 어떤 기기에서도 웹브라우저만 있으면 별도 설치 없이 바로 사용할 수 있습니다.</div>
                 </div>
-                
+
                 <div class="service-feature">
                     <div class="service-icon">🎨</div>
                     <div class="service-title">직관적인 인터페이스</div>
                     <div class="service-desc">아이들도 쉽게 사용할 수 있는 친근한 디자인으로 설계되어 있어 누구나 쉽게 활용할 수 있습니다.</div>
                 </div>
-                
+
                 <div class="service-feature">
                     <div class="service-icon">💾</div>
                     <div class="service-title">결과물 저장 및 공유</div>
                     <div class="service-desc">완성된 활동지는 PDF로 저장하거나 이미지로 공유할 수 있어 기록과 소통이 가능합니다.</div>
                 </div>
             </div>
-            
+
             <div class="usage-steps">
                 <div class="usage-step">
                     <div class="step-number">1</div>
-                    <div class="step-text">아래 카드 목록에서 원하는 활동을 선택합니다</div>
+                    <div class="step-text">위 카드 목록에서 원하는 활동을 선택합니다</div>
                 </div>
-                
+
                 <div class="usage-step">
                     <div class="step-number">2</div>
                     <div class="step-text">활동지 페이지에서 안내에 따라 활동을 진행합니다</div>
                 </div>
-                
+
                 <div class="usage-step">
                     <div class="step-number">3</div>
                     <div class="step-text">완성된 결과물을 저장하고 필요시 공유합니다</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="cards-grid">
-            <div class="card conflict-thermometer-card new">
-                <div class="card-icon">🌡️</div>
-                <span class="card-tag">갈등 해결</span>
-                <h3>갈등 온도계</h3>
-                <p>갈등 상황의 온도를 측정하고 Think·Puzzle·Explore 사고 루틴으로 차근차근 들여다보는 활동입니다. 갈등을 객관적으로 바라보며 건강한 해결 방법을 스스로 찾아보세요.</p>
-                <a href="https://plusiam.github.io/conflict-thermometer/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card virtue-canvas-card new">
-                <div class="card-icon">💎</div>
-                <span class="card-tag">미덕 발견</span>
-                <h3>나만의 미덕 카드</h3>
-                <p>나와 친구가 가진 좋은 점, 미덕을 발견하고 아름다운 카드로 만들어보세요. 서로의 장점을 찾아 표현하는 과정에서 자존감과 긍정적인 관계를 함께 키울 수 있어요.</p>
-                <a href="https://plusiam.github.io/my-virtue-canvas/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card dream-recipe-card new">
-                <div class="card-icon">🧑‍🍳</div>
-                <span class="card-tag">자아 탐구</span>
-                <h3>나다움 레시피 — 나는 꿈 요리사</h3>
-                <p>꿈 요리사가 되어 나다움의 재료를 찾아 나만의 레시피 카드를 만들어보세요. 내가 좋아하는 것, 잘하는 것, 소중히 여기는 가치를 요리하듯 조합하며 진짜 나를 발견할 수 있어요.</p>
-                <a href="https://plusiam.github.io/dream-recipe/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card dear-teacher-card new">
-                <div class="card-icon">🌹</div>
-                <span class="card-tag">감사 표현</span>
-                <h3>스승의 날 감사 카드 메이커</h3>
-                <p>선생님께 진심을 담은 스승의 날 감사 카드를 만들어보세요. 카네이션 클래식, 손편지 노트 등 4가지 테마로 마음을 예쁘게 꾸미고 PNG 이미지로 저장해 전할 수 있어요.</p>
-                <a href="https://plusiam.github.io/dear-teacher/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card emotion-card-maker new">
-                <div class="card-icon">💳</div>
-                <span class="card-tag">감정 표현</span>
-                <h3>감정카드 메이커</h3>
-                <p>나의 감정에 이름을 붙이고, 상황을 설명하며, 나만의 그림과 함께 개인화된 감정카드를 만들어보세요. 실시간 카메라 촬영과 파일 업로드로 더욱 생생한 감정 기록이 가능해요.</p>
-                <a href="https://plusiam.github.io/emotion-card-maker/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card emotion-explorer-card new">
-                <div class="card-icon">🎭</div>
-                <span class="card-tag">감정 탐구</span>
-                <h3>감정 4분면 탐험가 Plus</h3>
-                <p>Russell의 감정 원형 모델을 기반으로 감정을 체계적으로 탐구해보는 과학적 접근 도구입니다. 20가지 감정 카드로 어휘를 확장하고, 4분면으로 분류하며, 나만의 감정 이야기를 완성해보세요.</p>
-                <a href="https://plusiam.github.io/emotion-explorer/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card munpae-maker-card new">
-                <div class="card-icon">🪧</div>
-                <span class="card-tag">감정 표현</span>
-                <h3>내 마음을 알리는 문패 만들기</h3>
-                <p>자신의 감정 상태를 창의적으로 표현할 수 있는 문패를 만들어보세요. 다양한 디자인 옵션과 스티커로 나만의 특별한 문패를 제작하고, 가족이나 친구들과 마음을 나눌 수 있어요.</p>
-                <a href="https://plusiam.github.io/munpae-maker/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card positive-card-maker new">
-                <div class="card-icon">💌</div>
-                <span class="card-tag">긍정 메시지</span>
-                <h3>프리미엄 긍정 카드 메이커</h3>
-                <p>6가지 아름다운 템플릿과 이미지 업로드 기능으로 나만의 특별한 긍정 카드를 만들어보세요. 룰렛을 통한 메시지 추천과 실시간 미리보기로 완성도 높은 카드를 제작할 수 있어요.</p>
-                <a href="positive-card-maker/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card family-emotion-graph-card new">
-                <div class="card-icon">🕸️</div>
-                <span class="card-tag">가족 관계</span>
-                <h3>나와 가족의 감정 관계 그래프</h3>
-                <p>가족 구성원과의 감정적 연결을 시각적으로 표현해보는 인터랙티브 도구입니다. 드래그로 위치를 조정하고, 5단계 강도의 연결선으로 관계를 표현하며, 성찰 질문을 통해 가족과의 유대감을 깊이 탐구해보세요.</p>
-                <a href="https://plusiam.github.io/family-emotion-graph/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card friendship-graph-card new">
-                <div class="card-icon">🕸️</div>
-                <span class="card-tag">친구 관계</span>
-                <h3>친구관계 그래프 도구</h3>
-                <p>친구들과의 감정적 연결을 시각화하여 건강한 관계를 형성해보세요. 선의 굵기와 색깔로 관계의 특성을 표현하고, 4가지 성찰 질문을 통해 우정을 깊이 탐구하며 소중한 친구관계를 발전시켜보세요.</p>
-                <a href="https://plusiam.github.io/friendship-graph-tool/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card bucket-dreams-card new">
-                <div class="card-icon">🎯</div>
-                <span class="card-tag">목표 달성</span>
-                <h3>나의 버킷리스트</h3>
-                <p>인생에서 꼭 해보고 싶은 것들을 기록하고 달성해보는 버킷리스트 앱입니다. 6가지 카테고리로 체계적인 목표 관리, 완료 후기 작성, SNS 공유용 달성 카드 생성까지! 개인별 프로필로 안전하게 데이터를 관리할 수 있어요.</p>
-                <a href="https://plusiam.github.io/bucket-dreams/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card mind-card">
-                <div class="card-icon">🎯</div>
-                <span class="card-tag">개인 성찰</span>
-                <h3>나만의 마음 비법 만들기</h3>
-                <p>자신만의 특별한 마음 관리 방법을 발견하고 정리해보는 활동입니다. 개인의 성향과 상황에 맞는 맞춤형 정서조절 전략을 만들어보세요.</p>
-                <a href="https://plusiam.github.io/my-mind-card" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card growth-card">
-                <div class="card-icon">🌱</div>
-                <span class="card-tag">ABC 모델</span>
-                <h3>쑥쑥! 마음 성장 노트</h3>
-                <p>속상했던 일을 되돌아보며 생각과 감정의 연결고리를 찾아보는 성찰 활동입니다. ABC 모델을 통해 건강한 사고 패턴을 기를 수 있어요.</p>
-                <a href="https://plusiam.github.io/heart-growth/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card family-love-coupon-card">
-                <div class="card-icon">🏷️</div>
-                <span class="card-tag">가족 사랑</span>
-                <h3>가족 사랑 쿠폰 만들기</h3>
-                <p>가족에 대한 감사와 사랑을 표현하는 특별한 쿠폰을 만들어보세요. 실천 후 효도 일기를 작성하며 가족 유대감을 깊이 있게 형성할 수 있어요.</p>
-                <a href="https://plusiam.github.io/family-love-coupon-app/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card family-moments-card">
-                <div class="card-icon">👨‍👩‍👧‍👦</div>
-                <span class="card-tag">가족 유대</span>
-                <h3>우리 가족, 행복한 순간 그리기</h3>
-                <p>가족과의 소중한 경험을 떠올려 글과 그림으로 표현해보는 활동입니다. 가족 구성원에 대한 감사와 사랑을 나누며 가족 유대감을 강화해보세요.</p>
-                <a href="https://plusiam.github.io/happy-family-moments/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card invisible-child-card">
-                <div class="card-icon">🌟</div>
-                <span class="card-tag">공감 능력</span>
-                <h3>나도 멋진 친구! 색깔 찾기 작전</h3>
-                <p>그림책 '보이지 않는 아이'를 통해 친구의 숨겨진 좋은 점을 발견하고, 격려하는 마법 주문을 만들어보는 활동입니다. 공감과 배려를 배워보세요.</p>
-                <a href="https://plusiam.github.io/invisible-child-worksheet/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card letter-card">
-                <div class="card-icon">📝</div>
-                <span class="card-tag">감정 분석</span>
-                <h3>정서 4분면 마음 편지</h3>
-                <p>감정의 에너지와 방향을 4분면으로 분석하고, 나에게 따뜻한 마음 편지를 써보는 활동입니다. 과학적 접근으로 감정을 이해해보세요.</p>
-                <a href="https://plusiam.github.io/maum-letter/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card postcard-card">
-                <div class="card-icon">💝</div>
-                <span class="card-tag">마음 전달</span>
-                <h3>계절 테마 마음편지</h3>
-                <p>계절의 아름다움과 함께 소중한 사람에게 마음을 전하는 편지를 작성해보세요. 4계절 애니메이션과 함께하는 감정 표현 활동입니다.</p>
-                <a href="https://plusiam.github.io/my-family-postcard/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card friendship-card">
-                <div class="card-icon">🤝</div>
-                <span class="card-tag">관계 형성</span>
-                <h3>친구와 함께 만드는 우정 레시피</h3>
-                <p>요리 레시피처럼 우정을 만드는 특별한 재료와 방법을 담은 카드를 만들어보세요. 친구와의 소중한 추억을 기록하고 나눌 수 있어요.</p>
-                <a href="https://plusiam.github.io/friendship-recipe/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card recipe-card">
-                <div class="card-icon">🍳</div>
-                <span class="card-tag">창의 활동</span>
-                <h3>나만의 마음 레시피 카드 만들기</h3>
-                <p>요리 레시피처럼 행복과 긍정적인 마음을 만드는 나만의 레시피를 작성해보는 창의적인 활동입니다. 일상 속 작은 행복을 찾아보세요.</p>
-                <a href="https://plusiam.github.io/my-happy-recipe/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card abc-card">
-                <div class="card-icon">🔄</div>
-                <span class="card-tag">인지 전환</span>
-                <h3>ABC 생각 바꾸기</h3>
-                <p>인지행동치료의 ABC 모델을 활용하여 부정적인 생각을 긍정적으로 바꾸는 연습을 합니다. 상황-생각-감정의 연결고리를 이해해보세요.</p>
-                <a href="https://plusiam.github.io/abc-think/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card abc-heart-bridge-card new">
-                <div class="card-icon">🌉</div>
-                <span class="card-tag">공감 상담</span>
-                <h3>역지사지 ABC 상담 브릿지</h3>
-                <p>ABC 모델로 상대방의 입장에서 생각해보는 역지사지 상담 활동입니다. 나와 상대방의 관점을 모두 이해하며 깊은 공감과 소통의 다리를 만들어보세요.</p>
-                <a href="https://plusiam.github.io/abc-heart-bridge" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card abc-friend-card">
-                <div class="card-icon">🤝</div>
-                <span class="card-tag">친구 상담</span>
-                <h3>ABC 친구 상담소</h3>
-                <p>친구 관계에서 겪는 어려움을 ABC 모델로 분석하고 건강한 관계를 만들어가는 상담 활동입니다. 갈등을 해결하고 우정을 깊게 만들어보세요.</p>
-                <a href="https://plusiam.github.io/abc-friend-consultant/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card abc-friend-peer-card new">
-                <div class="card-icon">🌈</div>
-                <span class="card-tag">또래 상담</span>
-                <h3>ABC 친구 도우미</h3>
-                <p>4단계 체계적 또래 상담 프로그램으로 친구의 마음을 이해하고 공감하며 도움을 주는 방법을 배워보세요. 마음 공감하기 → 공감 표현하기 → 도움 찾기 → 격려하기 순서로 진행됩니다.</p>
-                <a href="https://plusiam.github.io/abc-friend-peer/" target="_blank" class="card-button">
-                    💻 활동지 바로가기
-                </a>
-            </div>
-
-            <div class="card abc-sangdam-card new">
-                <div class="card-icon">🧘‍♀️</div>
-                <span class="card-tag">AI 상담</span>
-                <h3>ABC 상담 마음이</h3>
-                <p>AI 상담사 '마음이'와 함께하는 ABC 모델 기반 정서 상담 서비스입니다. 24시간 언제든지 마음의 고민을 나누고 전문적인 ABC 기법으로 감정을 정리해보세요.</p>
-                <a href="https://chatgpt.com/g/g-6859df12e880819199dc6210efd354a1-abc-sangdam-maeumi" target="_blank" class="card-button">
-                    🤖 AI 상담 시작하기
-                </a>
-            </div>
-        </div>
-
-        <!-- 관련 프로젝트 섹션 추가 -->
-        <div class="related-section">
-            <h2 class="section-title">🌱 관련 프로젝트</h2>
-            <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
-                <div class="card maumbom-card new">
-                    <div class="card-icon">🌿</div>
-                    <span class="card-tag">마음 성장</span>
-                    <h3>마음봄 프로젝트</h3>
-                    <p>마음의 성장과 치유를 돕는 종합 프로젝트입니다. 다양한 활동과 자료를 통해 정서적 웰빙을 지원하고 건강한 마음 형성에 도움을 드립니다.</p>
-                    <a href="https://plusiam.github.io/maumbom-website/" target="_blank" class="card-button">
-                        🌱 마음봄 방문하기
-                    </a>
                 </div>
             </div>
         </div>
@@ -825,19 +642,19 @@
             <div style="margin-top: 15px;">
                 <p>제작자: 룰루랄라 한기쌤</p>
                 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
-                    <a href="https://www.facebook.com/playrurulala?locale=ko_KR" target="_blank" style="color: white; text-decoration: none;">
+                    <a href="https://www.facebook.com/playrurulala?locale=ko_KR" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">
                         <span style="font-size: 1.2rem;">📘 Facebook</span>
                     </a>
-                    <a href="https://plusiam.github.io/widyu-mindfulness-website/" target="_blank" style="color: white; text-decoration: none;">
+                    <a href="https://plusiam.github.io/widyu-mindfulness-website/" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">
                         <span style="font-size: 1.2rem;">🌐 Website</span>
                     </a>
-                    <a href="https://www.youtube.com/channel/UCVcgTO7CJaKBSr6FbQxBT1w" target="_blank" style="color: white; text-decoration: none;">
+                    <a href="https://www.youtube.com/channel/UCVcgTO7CJaKBSr6FbQxBT1w" target="_blank" rel="noopener noreferrer" style="color: white; text-decoration: none;">
                         <span style="font-size: 1.2rem;">📺 YouTube</span>
                     </a>
                 </div>
             </div>
-            
-            <!-- 프로젝트 생태계 섹션 추가 -->
+
+            <!-- 프로젝트 생태계: 사이트 단위 링크만 유지 (개별 도구는 위 카드 목록에서 관리) -->
             <div class="project-ecosystem">
                 <h3 style="margin-bottom: 15px;">🌟 마음성장 프로젝트 생태계</h3>
                 <div class="ecosystem-links">
@@ -845,42 +662,18 @@
                         <span>🧠</span>
                         <span>정서조절 웹학습지</span>
                     </a>
-                    <a href="https://plusiam.github.io/maumbom-website/" class="eco-link">
+                    <a href="https://plusiam.github.io/maumbom-website/" target="_blank" rel="noopener noreferrer" class="eco-link">
                         <span>🌱</span>
                         <span>마음봄 프로젝트</span>
                     </a>
-                    <a href="https://plusiam.github.io/widyu-mindfulness-website/" class="eco-link">
+                    <a href="https://plusiam.github.io/widyu-mindfulness-website/" target="_blank" rel="noopener noreferrer" class="eco-link">
                         <span>🧘</span>
                         <span>마음챙김 자료실</span>
                     </a>
-                    <a href="https://plusiam.github.io/emotion-card-maker/" class="eco-link">
-                        <span>💳</span>
-                        <span>감정카드 메이커</span>
-                    </a>
-                    <a href="https://plusiam.github.io/munpae-maker/" class="eco-link">
-                        <span>🪧</span>
-                        <span>문패 만들기</span>
-                    </a>
-                    <a href="https://plusiam.github.io/family-emotion-graph/" class="eco-link">
-                        <span>🕸️</span>
-                        <span>가족 감정 관계 그래프</span>
-                    </a>
-                    <a href="https://plusiam.github.io/friendship-graph-tool/" class="eco-link">
-                        <span>🕸️</span>
-                        <span>친구관계 그래프</span>
-                    </a>
-                    <a href="https://plusiam.github.io/emotion-explorer/" class="eco-link">
-                        <span>🎭</span>
-                        <span>감정 4분면 탐험가</span>
-                    </a>
-                    <a href="https://plusiam.github.io/bucket-dreams/" class="eco-link">
-                        <span>🎯</span>
-                        <span>나의 버킷리스트</span>
-                    </a>
                 </div>
             </div>
-            
-            <!-- 저작권 안내 섹션 추가 -->
+
+            <!-- 저작권 안내 -->
             <div class="copyright-notice">
                 <p><span class="copyright-icon">©️</span> <strong>저작권 안내</strong></p>
                 <p>본 서비스 개발에 적용된 아이디어나 콘텐츠의 상업적 이용은 제작자(룰루랄라 한기쌤)의 사전 동의 없이 불가합니다.</p>
@@ -889,104 +682,227 @@
         </footer>
     </div>
 
+    <!-- QR 모달 -->
+    <div class="qr-modal" id="qr-modal" role="dialog" aria-modal="true" aria-label="QR 코드 보기">
+        <div class="qr-box">
+            <h3 id="qr-title"></h3>
+            <img id="qr-img" alt="도구 접속 QR 코드">
+            <p class="qr-url" id="qr-url"></p>
+            <button class="qr-close" id="qr-close">닫기</button>
+        </div>
+    </div>
+
     <script>
-        // 페이지 로드 시 카드들이 순차적으로 나타나는 애니메이션
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.card');
-            const features = document.querySelectorAll('.feature');
-            const serviceFeatures = document.querySelectorAll('.service-feature');
-            const usageSteps = document.querySelectorAll('.usage-step');
-            
-            // 카드 애니메이션
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(50px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'all 0.6s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 150);
+        // 도구 목록 단일 데이터 소스 — 도구 추가/수정은 이 배열만 편집하면 됩니다.
+        // category: emotion(감정 알기) | relation(관계·소통) | abc(ABC 상담) | self(나 탐구)
+        // added: 등록일. 90일 이내면 NEW 뱃지가 자동 표시됩니다.
+        const TOOLS = [
+            { id: 'conflict-thermometer', icon: '🌡️', tag: '갈등 해결', color: '#ef4444', category: 'relation', added: '2026-07-08',
+              title: '갈등 온도계',
+              desc: '갈등 상황의 온도를 측정하고 Think·Puzzle·Explore 사고 루틴으로 차근차근 들여다보는 활동입니다. 갈등을 객관적으로 바라보며 건강한 해결 방법을 스스로 찾아보세요.',
+              url: 'https://plusiam.github.io/conflict-thermometer/' },
+            { id: 'my-virtue-canvas', icon: '💎', tag: '미덕 발견', color: '#14b8a6', category: 'self', added: '2026-07-08',
+              title: '나만의 미덕 카드',
+              desc: '나와 친구가 가진 좋은 점, 미덕을 발견하고 아름다운 카드로 만들어보세요. 서로의 장점을 찾아 표현하는 과정에서 자존감과 긍정적인 관계를 함께 키울 수 있어요.',
+              url: 'https://plusiam.github.io/my-virtue-canvas/' },
+            { id: 'dream-recipe', icon: '🧑‍🍳', tag: '자아 탐구', color: '#0ea5e9', category: 'self', added: '2026-07-08',
+              title: '나다움 레시피 — 나는 꿈 요리사',
+              desc: '꿈 요리사가 되어 나다움의 재료를 찾아 나만의 레시피 카드를 만들어보세요. 내가 좋아하는 것, 잘하는 것, 소중히 여기는 가치를 요리하듯 조합하며 진짜 나를 발견할 수 있어요.',
+              url: 'https://plusiam.github.io/dream-recipe/' },
+            { id: 'dear-teacher', icon: '🌹', tag: '감사 표현', color: '#e11d48', category: 'relation', added: '2026-07-08',
+              title: '스승의 날 감사 카드 메이커',
+              desc: '선생님께 진심을 담은 스승의 날 감사 카드를 만들어보세요. 카네이션 클래식, 손편지 노트 등 4가지 테마로 마음을 예쁘게 꾸미고 PNG 이미지로 저장해 전할 수 있어요.',
+              url: 'https://plusiam.github.io/dear-teacher/' },
+            { id: 'emotion-card-maker', icon: '💳', tag: '감정 표현', color: '#ec4899', category: 'emotion', added: '2025-07-11',
+              title: '감정카드 메이커',
+              desc: '나의 감정에 이름을 붙이고, 상황을 설명하며, 나만의 그림과 함께 개인화된 감정카드를 만들어보세요. 실시간 카메라 촬영과 파일 업로드로 더욱 생생한 감정 기록이 가능해요.',
+              url: 'https://plusiam.github.io/emotion-card-maker/' },
+            { id: 'emotion-explorer', icon: '🎭', tag: '감정 탐구', color: '#6366f1', category: 'emotion', added: '2025-07-10',
+              title: '감정 4분면 탐험가 Plus',
+              desc: 'Russell의 감정 원형 모델을 기반으로 감정을 체계적으로 탐구해보는 과학적 접근 도구입니다. 20가지 감정 카드로 어휘를 확장하고, 4분면으로 분류하며, 나만의 감정 이야기를 완성해보세요.',
+              url: 'https://plusiam.github.io/emotion-explorer/' },
+            { id: 'munpae-maker', icon: '🪧', tag: '감정 표현', color: '#ff6f00', category: 'emotion', added: '2025-07-01',
+              title: '내 마음을 알리는 문패 만들기',
+              desc: '자신의 감정 상태를 창의적으로 표현할 수 있는 문패를 만들어보세요. 다양한 디자인 옵션과 스티커로 나만의 특별한 문패를 제작하고, 가족이나 친구들과 마음을 나눌 수 있어요.',
+              url: 'https://plusiam.github.io/munpae-maker/' },
+            { id: 'positive-card-maker', icon: '💌', tag: '긍정 메시지', color: '#9333ea', category: 'emotion', added: '2025-06-08',
+              title: '프리미엄 긍정 카드 메이커',
+              desc: '6가지 아름다운 템플릿과 이미지 업로드 기능으로 나만의 특별한 긍정 카드를 만들어보세요. 룰렛을 통한 메시지 추천과 실시간 미리보기로 완성도 높은 카드를 제작할 수 있어요.',
+              url: 'positive-card-maker/' },
+            { id: 'family-emotion-graph', icon: '🕸️', tag: '가족 관계', color: '#e91e63', category: 'relation', added: '2025-07-07',
+              title: '나와 가족의 감정 관계 그래프',
+              desc: '가족 구성원과의 감정적 연결을 시각적으로 표현해보는 인터랙티브 도구입니다. 드래그로 위치를 조정하고, 5단계 강도의 연결선으로 관계를 표현하며, 성찰 질문을 통해 가족과의 유대감을 깊이 탐구해보세요.',
+              url: 'https://plusiam.github.io/family-emotion-graph/' },
+            { id: 'friendship-graph-tool', icon: '🕸️', tag: '친구 관계', color: '#06d6a0', category: 'relation', added: '2025-07-10',
+              title: '친구관계 그래프 도구',
+              desc: '친구들과의 감정적 연결을 시각화하여 건강한 관계를 형성해보세요. 선의 굵기와 색깔로 관계의 특성을 표현하고, 4가지 성찰 질문을 통해 우정을 깊이 탐구하며 소중한 친구관계를 발전시켜보세요.',
+              url: 'https://plusiam.github.io/friendship-graph-tool/' },
+            { id: 'bucket-dreams', icon: '🎯', tag: '목표 달성', color: '#d97706', category: 'self', added: '2025-07-12',
+              title: '나의 버킷리스트',
+              desc: '인생에서 꼭 해보고 싶은 것들을 기록하고 달성해보는 버킷리스트 앱입니다. 6가지 카테고리로 체계적인 목표 관리, 완료 후기 작성, SNS 공유용 달성 카드 생성까지! 개인별 프로필로 안전하게 데이터를 관리할 수 있어요.',
+              url: 'https://plusiam.github.io/bucket-dreams/' },
+            { id: 'my-mind-card', icon: '🎯', tag: '개인 성찰', color: '#ff6b6b', category: 'self', added: '2025-05-27',
+              title: '나만의 마음 비법 만들기',
+              desc: '자신만의 특별한 마음 관리 방법을 발견하고 정리해보는 활동입니다. 개인의 성향과 상황에 맞는 맞춤형 정서조절 전략을 만들어보세요.',
+              url: 'https://plusiam.github.io/my-mind-card' },
+            { id: 'heart-growth', icon: '🌱', tag: 'ABC 모델', color: '#10b981', category: 'abc', added: '2025-05-29',
+              title: '쑥쑥! 마음 성장 노트',
+              desc: '속상했던 일을 되돌아보며 생각과 감정의 연결고리를 찾아보는 성찰 활동입니다. ABC 모델을 통해 건강한 사고 패턴을 기를 수 있어요.',
+              url: 'https://plusiam.github.io/heart-growth/' },
+            { id: 'family-love-coupon-app', icon: '🏷️', tag: '가족 사랑', color: '#ff1744', category: 'relation', added: '2025-06-08',
+              title: '가족 사랑 쿠폰 만들기',
+              desc: '가족에 대한 감사와 사랑을 표현하는 특별한 쿠폰을 만들어보세요. 실천 후 효도 일기를 작성하며 가족 유대감을 깊이 있게 형성할 수 있어요.',
+              url: 'https://plusiam.github.io/family-love-coupon-app/' },
+            { id: 'happy-family-moments', icon: '👨‍👩‍👧‍👦', tag: '가족 유대', color: '#ff7f50', category: 'relation', added: '2025-06-08',
+              title: '우리 가족, 행복한 순간 그리기',
+              desc: '가족과의 소중한 경험을 떠올려 글과 그림으로 표현해보는 활동입니다. 가족 구성원에 대한 감사와 사랑을 나누며 가족 유대감을 강화해보세요.',
+              url: 'https://plusiam.github.io/happy-family-moments/' },
+            { id: 'invisible-child-worksheet', icon: '🌟', tag: '공감 능력', color: '#ff8a65', category: 'self', added: '2025-06-05',
+              title: '나도 멋진 친구! 색깔 찾기 작전',
+              desc: '그림책 \'보이지 않는 아이\'를 통해 친구의 숨겨진 좋은 점을 발견하고, 격려하는 마법 주문을 만들어보는 활동입니다. 공감과 배려를 배워보세요.',
+              url: 'https://plusiam.github.io/invisible-child-worksheet/' },
+            { id: 'maum-letter', icon: '📝', tag: '감정 분석', color: '#8b5cf6', category: 'emotion', added: '2025-05-29',
+              title: '정서 4분면 마음 편지',
+              desc: '감정의 에너지와 방향을 4분면으로 분석하고, 나에게 따뜻한 마음 편지를 써보는 활동입니다. 과학적 접근으로 감정을 이해해보세요.',
+              url: 'https://plusiam.github.io/maum-letter/' },
+            { id: 'my-family-postcard', icon: '💝', tag: '마음 전달', color: '#db2777', category: 'emotion', added: '2025-05-31',
+              title: '계절 테마 마음편지',
+              desc: '계절의 아름다움과 함께 소중한 사람에게 마음을 전하는 편지를 작성해보세요. 4계절 애니메이션과 함께하는 감정 표현 활동입니다.',
+              url: 'https://plusiam.github.io/my-family-postcard/' },
+            { id: 'friendship-recipe', icon: '🤝', tag: '관계 형성', color: '#f59e0b', category: 'relation', added: '2025-05-30',
+              title: '친구와 함께 만드는 우정 레시피',
+              desc: '요리 레시피처럼 우정을 만드는 특별한 재료와 방법을 담은 카드를 만들어보세요. 친구와의 소중한 추억을 기록하고 나눌 수 있어요.',
+              url: 'https://plusiam.github.io/friendship-recipe/' },
+            { id: 'my-happy-recipe', icon: '🍳', tag: '창의 활동', color: '#4ecdc4', category: 'self', added: '2025-05-27',
+              title: '나만의 마음 레시피 카드 만들기',
+              desc: '요리 레시피처럼 행복과 긍정적인 마음을 만드는 나만의 레시피를 작성해보는 창의적인 활동입니다. 일상 속 작은 행복을 찾아보세요.',
+              url: 'https://plusiam.github.io/my-happy-recipe/' },
+            { id: 'abc-think', icon: '🔄', tag: '인지 전환', color: '#45b7d1', category: 'abc', added: '2025-05-27',
+              title: 'ABC 생각 바꾸기',
+              desc: '인지행동치료의 ABC 모델을 활용하여 부정적인 생각을 긍정적으로 바꾸는 연습을 합니다. 상황-생각-감정의 연결고리를 이해해보세요.',
+              url: 'https://plusiam.github.io/abc-think/' },
+            { id: 'abc-heart-bridge', icon: '🌉', tag: '공감 상담', color: '#f97316', category: 'abc', added: '2025-06-24',
+              title: '역지사지 ABC 상담 브릿지',
+              desc: 'ABC 모델로 상대방의 입장에서 생각해보는 역지사지 상담 활동입니다. 나와 상대방의 관점을 모두 이해하며 깊은 공감과 소통의 다리를 만들어보세요.',
+              url: 'https://plusiam.github.io/abc-heart-bridge' },
+            { id: 'abc-friend-consultant', icon: '🤝', tag: '친구 상담', color: '#ff5722', category: 'abc', added: '2025-06-18',
+              title: 'ABC 친구 상담소',
+              desc: '친구 관계에서 겪는 어려움을 ABC 모델로 분석하고 건강한 관계를 만들어가는 상담 활동입니다. 갈등을 해결하고 우정을 깊게 만들어보세요.',
+              url: 'https://plusiam.github.io/abc-friend-consultant/' },
+            { id: 'abc-friend-peer', icon: '🌈', tag: '또래 상담', color: '#06a4e8', category: 'abc', added: '2025-06-22',
+              title: 'ABC 친구 도우미',
+              desc: '4단계 체계적 또래 상담 프로그램으로 친구의 마음을 이해하고 공감하며 도움을 주는 방법을 배워보세요. 마음 공감하기 → 공감 표현하기 → 도움 찾기 → 격려하기 순서로 진행됩니다.',
+              url: 'https://plusiam.github.io/abc-friend-peer/' }
+        ];
+
+        const NEW_BADGE_DAYS = 90;
+        const grid = document.getElementById('cards-grid');
+        const searchInput = document.getElementById('search-input');
+        const filterBar = document.getElementById('filter-bar');
+
+        let activeCategory = 'all';
+
+        function isNew(tool) {
+            return (Date.now() - new Date(tool.added).getTime()) < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+        }
+
+        function absoluteUrl(url) {
+            return new URL(url, window.location.href).href;
+        }
+
+        function cardHTML(tool, index) {
+            return `
+                <div class="card${isNew(tool) ? ' new' : ''}" style="--card-color: ${tool.color}; --i: ${index}">
+                    <div class="card-icon">${tool.icon}</div>
+                    <span class="card-tag">${tool.tag}</span>
+                    <h3>${tool.title}</h3>
+                    <p>${tool.desc}</p>
+                    <a href="${tool.url}" target="_blank" rel="noopener noreferrer" class="card-button">💻 활동지 바로가기</a>
+                    <div class="card-actions">
+                        <button class="card-action-btn" data-action="copy" data-url="${absoluteUrl(tool.url)}">🔗 링크 복사</button>
+                        <button class="card-action-btn" data-action="qr" data-url="${absoluteUrl(tool.url)}" data-title="${tool.title}">📱 QR 보기</button>
+                    </div>
+                </div>`;
+        }
+
+        function renderCards() {
+            const term = searchInput.value.trim().toLowerCase();
+            const list = TOOLS.filter(t => {
+                const inCategory = activeCategory === 'all' || t.category === activeCategory;
+                const inSearch = !term || (t.title + t.tag + t.desc).toLowerCase().includes(term);
+                return inCategory && inSearch;
             });
-            
-            // 특징 섹션 애니메이션
-            features.forEach((feature, index) => {
-                feature.style.opacity = '0';
-                feature.style.transform = 'translateY(30px)';
-                
-                setTimeout(() => {
-                    feature.style.transition = 'all 0.5s ease';
-                    feature.style.opacity = '1';
-                    feature.style.transform = 'translateY(0)';
-                }, 1200 + index * 100);
-            });
-            
-            // 서비스 특징 애니메이션
-            serviceFeatures.forEach((feature, index) => {
-                feature.style.opacity = '0';
-                feature.style.transform = 'translateY(30px)';
-                
-                setTimeout(() => {
-                    feature.style.transition = 'all 0.6s ease';
-                    feature.style.opacity = '1';
-                    feature.style.transform = 'translateY(0)';
-                }, 300 + index * 150);
-            });
-            
-            // 이용 단계 애니메이션
-            usageSteps.forEach((step, index) => {
-                step.style.opacity = '0';
-                step.style.transform = 'translateY(20px)';
-                
-                setTimeout(() => {
-                    step.style.transition = 'all 0.5s ease';
-                    step.style.opacity = '1';
-                    step.style.transform = 'translateY(0)';
-                }, 800 + index * 200);
-            });
+            grid.innerHTML = list.length
+                ? list.map(cardHTML).join('')
+                : '<p class="no-result">조건에 맞는 도구가 없어요. 다른 검색어나 카테고리를 골라보세요.</p>';
+        }
+
+        // 카테고리 탭 (URL 해시 연동 — #abc 형태로 특정 카테고리만 공유 가능)
+        filterBar.addEventListener('click', (e) => {
+            const tab = e.target.closest('.filter-tab');
+            if (!tab) return;
+            activeCategory = tab.dataset.category;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t === tab));
+            history.replaceState(null, '', activeCategory === 'all' ? window.location.pathname : '#' + activeCategory);
+            renderCards();
         });
 
-        // 카드 클릭 시 피드백 효과
-        document.querySelectorAll('.card-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                // 클릭 효과 추가
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1.02)';
-                }, 100);
-            });
+        searchInput.addEventListener('input', renderCards);
+
+        // 링크 복사 / QR 보기 (이벤트 위임)
+        const qrModal = document.getElementById('qr-modal');
+        const qrImg = document.getElementById('qr-img');
+        const qrTitle = document.getElementById('qr-title');
+        const qrUrl = document.getElementById('qr-url');
+
+        grid.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.card-action-btn');
+            if (btn) {
+                if (btn.dataset.action === 'copy') {
+                    try {
+                        await navigator.clipboard.writeText(btn.dataset.url);
+                    } catch {
+                        // 구형 브라우저·비보안 컨텍스트 폴백
+                        const ta = document.createElement('textarea');
+                        ta.value = btn.dataset.url;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        ta.remove();
+                    }
+                    const original = btn.textContent;
+                    btn.textContent = '✅ 복사됨!';
+                    setTimeout(() => { btn.textContent = original; }, 1500);
+                } else if (btn.dataset.action === 'qr') {
+                    qrTitle.textContent = btn.dataset.title;
+                    qrUrl.textContent = btn.dataset.url;
+                    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(btn.dataset.url);
+                    qrImg.onerror = () => { qrUrl.textContent = 'QR 생성에 실패했어요. 위 주소를 직접 입력해 주세요. → ' + btn.dataset.url; };
+                    qrModal.classList.add('open');
+                }
+                return;
+            }
+            // 버튼 클릭 피드백 (애니메이션 종료 후 자동 원상 복귀)
+            const link = e.target.closest('.card-button');
+            if (link) {
+                link.classList.remove('pressed');
+                void link.offsetWidth;
+                link.classList.add('pressed');
+            }
         });
 
-        // 스크롤 시 헤더 효과
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.header');
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * -0.5;
-            
-            header.style.transform = `translateY(${rate}px)`;
-        });
+        document.getElementById('qr-close').addEventListener('click', () => qrModal.classList.remove('open'));
+        qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('open'); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') qrModal.classList.remove('open'); });
 
-        // 카드 호버 시 추가 효과
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-15px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-
-        // 생태계 링크 호버 효과
-        document.querySelectorAll('.eco-link').forEach(link => {
-            link.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px)';
-            });
-            
-            link.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
+        // 초기 렌더링 (URL 해시에 카테고리가 있으면 해당 탭으로 시작)
+        const hash = window.location.hash.slice(1);
+        const hashTab = document.querySelector(`.filter-tab[data-category="${hash}"]`);
+        if (hashTab) {
+            activeCategory = hash;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.toggle('active', t === hashTab));
+        }
+        renderCards();
     </script>
 </body>
 </html>
