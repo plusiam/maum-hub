@@ -1,12 +1,10 @@
 # 🧠 정서조절 웹학습지 모음 (maum-hub)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/deed.ko)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://plusiam.github.io/maum-hub/)
 [![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red.svg)](https://plusiam.github.io/maum-hub/)
 
 > 마음을 다스리고 감정을 조절하는 다양한 활동을 통해 건강한 정서 발달을 도와주는 학습 도구 모음
-
-![마음허브 스크린샷](https://via.placeholder.com/1200x600?text=Maum+Hub+Screenshot)
 
 ## 🎯 프로젝트 소개
 
@@ -466,7 +464,7 @@ git push origin feature/AmazingTool
 
 ## 📄 라이선스
 
-이 프로젝트는 교육 목적의 개인 사용에 한해 자유롭게 사용 가능합니다.
+이 프로젝트는 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.ko) 라이선스를 따릅니다. 교육 목적의 사용은 자유롭게 가능하지만 상업적 이용은 금지됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 확인하세요.
 
 ### ©️ 저작권 안내
 
