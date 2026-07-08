@@ -86,7 +86,7 @@
 
 ---
 
-### 🤝 관계 형성 & 소통 (5개 도구)
+### 🤝 관계 형성 & 소통 (7개 도구)
 
 #### 1. 친구관계 그래프 도구 ⭐ NEW
 - **링크**: [friendship-graph-tool](https://plusiam.github.io/friendship-graph-tool/)
@@ -130,6 +130,22 @@
   - 요리 레시피 형식의 우정 카드
   - 친구와의 추억 기록
   - 특별한 재료와 방법 작성
+
+#### 6. 갈등 온도계 ⭐ NEW
+- **링크**: [conflict-thermometer](https://plusiam.github.io/conflict-thermometer/)
+- **특징**: 갈등 상황 기록과 성찰
+- **주요 기능**:
+  - 갈등 온도 측정으로 감정 강도 객관화
+  - Think·Puzzle·Explore 사고 루틴 적용
+  - 건강한 갈등 해결 방법 탐색
+
+#### 7. 스승의 날 감사 카드 메이커 ⭐ NEW
+- **링크**: [dear-teacher](https://plusiam.github.io/dear-teacher/)
+- **특징**: 선생님께 전하는 감사 표현
+- **주요 기능**:
+  - 카네이션 클래식, 손편지 노트 등 4가지 테마
+  - 진심을 담은 감사 메시지 작성
+  - PNG 이미지 다운로드
 
 ---
 
@@ -190,7 +206,7 @@
 
 ---
 
-### 🌱 개인 성찰 & 창의 활동 (4개 도구)
+### 🌱 개인 성찰 & 창의 활동 (6개 도구)
 
 #### 1. 나의 버킷리스트 ⭐ NEW
 - **링크**: [bucket-dreams](https://plusiam.github.io/bucket-dreams/)
@@ -226,6 +242,22 @@
   - 그림책 '보이지 않는 아이' 기반
   - 친구의 숨겨진 장점 발견
   - 격려하는 마법 주문 만들기
+
+#### 5. 나다움 레시피 — 나는 꿈 요리사 ⭐ NEW
+- **링크**: [dream-recipe](https://plusiam.github.io/dream-recipe/)
+- **특징**: 자아 탐구와 진로 성찰 (6학년 도덕 연계)
+- **주요 기능**:
+  - 나다움의 재료 찾기
+  - 좋아하는 것, 잘하는 것, 소중한 가치 조합
+  - 나만의 레시피 카드 완성
+
+#### 6. 나만의 미덕 카드 ⭐ NEW
+- **링크**: [my-virtue-canvas](https://plusiam.github.io/my-virtue-canvas/)
+- **특징**: 나와 친구의 미덕 발견
+- **주요 기능**:
+  - 좋은 점을 찾아 카드로 표현
+  - 자존감과 긍정적 관계 형성
+  - 아름다운 카드 디자인
 
 ---
 
