@@ -1,0 +1,38 @@
+# 허브에 등록된 외부 도구 링크가 살아있는지 매주 점검하고, 깨지면 이슈를 자동 생성하는 워크플로
+name: 링크 점검
+
+on:
+  schedule:
+    # 매주 월요일 오전 6시(KST) = 일요일 21:00 UTC
+    - cron: '0 21 * * 0'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 링크 검사 (lychee)
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # facebook·youtube는 로그인 벽으로 오탐이 잦아 제외 (분기별 수동 확인)
+          args: >-
+            --no-progress
+            --exclude 'facebook\.com'
+            --exclude 'youtube\.com'
+            --exclude 'api\.qrserver\.com'
+            index.html README.md
+          fail: false
+
+      - name: 깨진 링크 이슈 생성
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: '🔗 깨진 링크 발견 — 주간 링크 점검'
+          content-filepath: ./lychee/out.md
+          labels: link-check
