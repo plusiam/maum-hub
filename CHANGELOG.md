@@ -2,6 +2,12 @@
 
 이 프로젝트의 주요 변경 사항을 기록합니다. [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/) 형식을 따릅니다.
 
+## [3.1.1] - 2026-07-08
+
+### 변경
+- '우리 가족, 행복한 순간 그리기' 링크를 정본 저장소(family-happy-moments-v2)로 교체
+- 구버전 저장소(happy-family-moments, bucket-dreams-v3) 정리
+
 ## [3.1.0] - 2026-07-08
 
 ### 추가

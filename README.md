@@ -116,7 +116,7 @@
   - 감사와 사랑 표현
 
 #### 4. 우리 가족, 행복한 순간 그리기
-- **링크**: [happy-family-moments](https://plusiam.github.io/happy-family-moments/)
+- **링크**: [family-happy-moments-v2](https://plusiam.github.io/family-happy-moments-v2/)
 - **특징**: 가족 추억 기록
 - **주요 기능**:
   - 소중한 경험 글과 그림으로 표현
