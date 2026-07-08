@@ -86,7 +86,7 @@
 
 ---
 
-### 🤝 관계 형성 & 소통 (7개 도구)
+### 🤝 관계 형성 & 소통 (8개 도구)
 
 #### 1. 친구관계 그래프 도구 ⭐ NEW
 - **링크**: [friendship-graph-tool](https://plusiam.github.io/friendship-graph-tool/)
@@ -146,6 +146,14 @@
   - 카네이션 클래식, 손편지 노트 등 4가지 테마
   - 진심을 담은 감사 메시지 작성
   - PNG 이미지 다운로드
+
+#### 8. 우리 반 차터 만들기 ⭐ NEW
+- **링크**: [charter-builder](https://plusiam.github.io/charter-builder/)
+- **특징**: RULER 접근 기반 학급 공동체 협약(차터) 만들기
+- **주요 기능**:
+  - 무드미터로 우리 반 감정 상태 확인
+  - 3가지 질문으로 함께 만드는 약속
+  - 규칙과 차터의 차이 학습
 
 ---
 
