@@ -351,30 +351,49 @@
             };
         }
 
-        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-            const words = text.split(' ');
+        function breakLines(ctx, text, maxWidth) {
             const lines = [];
             let currentLine = '';
 
-            for (let word of words) {
-                const testLine = currentLine + (currentLine ? ' ' : '') + word;
-                const metrics = ctx.measureText(testLine);
-                
-                if (metrics.width > maxWidth && currentLine !== '') {
-                    lines.push(currentLine);
-                    currentLine = word;
-                } else {
+            for (const word of text.split(' ')) {
+                const testLine = currentLine ? currentLine + ' ' + word : word;
+                if (ctx.measureText(testLine).width <= maxWidth) {
                     currentLine = testLine;
+                    continue;
                 }
+                if (currentLine) {
+                    lines.push(currentLine);
+                    currentLine = '';
+                }
+                if (ctx.measureText(word).width <= maxWidth) {
+                    currentLine = word;
+                    continue;
+                }
+                // 공백 없는 긴 한글 구간은 단어 분리가 안 되므로 글자 단위로 잘라 넘침 방지
+                let chunk = '';
+                for (const ch of word) {
+                    if (chunk && ctx.measureText(chunk + ch).width > maxWidth) {
+                        lines.push(chunk);
+                        chunk = ch;
+                    } else {
+                        chunk += ch;
+                    }
+                }
+                currentLine = chunk;
             }
             if (currentLine) {
                 lines.push(currentLine);
             }
+            return lines;
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const lines = breakLines(ctx, text, maxWidth);
 
             // 텍스트 그리기
             const totalHeight = lines.length * lineHeight;
             const startY = y - (totalHeight / 2) + (lineHeight / 2);
-            
+
             lines.forEach((line, index) => {
                 ctx.fillText(line, x, startY + (index * lineHeight));
             });
@@ -389,33 +408,16 @@
             
             while (fontSize > minFontSize) {
                 ctx.font = `${fontSize}px 'Gowun Dodum', sans-serif`;
-                
+
                 let totalHeight = 0;
                 let maxTextWidth = 0;
-                
+
                 for (let text of texts) {
-                    const words = text.split(' ');
-                    let currentLine = '';
-                    let lineCount = 0;
-                    
-                    for (let word of words) {
-                        const testLine = currentLine + (currentLine ? ' ' : '') + word;
-                        const metrics = ctx.measureText(testLine);
-                        
-                        if (metrics.width > maxWidth && currentLine !== '') {
-                            lineCount++;
-                            maxTextWidth = Math.max(maxTextWidth, ctx.measureText(currentLine).width);
-                            currentLine = word;
-                        } else {
-                            currentLine = testLine;
-                        }
+                    const lines = breakLines(ctx, text, maxWidth);
+                    for (const line of lines) {
+                        maxTextWidth = Math.max(maxTextWidth, ctx.measureText(line).width);
                     }
-                    if (currentLine) {
-                        lineCount++;
-                        maxTextWidth = Math.max(maxTextWidth, ctx.measureText(currentLine).width);
-                    }
-                    
-                    totalHeight += lineCount * (fontSize * 1.4) + 20; // 메시지 간 간격
+                    totalHeight += lines.length * (fontSize * 1.4) + 20; // 메시지 간 간격
                 }
                 
                 if (totalHeight <= maxHeight && maxTextWidth <= maxWidth) {
@@ -544,27 +546,9 @@
                     
                     // 총 높이 계산
                     let totalHeight = 0;
-                    const lineCounts = messages.map(message => {
-                        const words = message.split(' ');
-                        let currentLine = '';
-                        let lineCount = 0;
-                        
-                        for (let word of words) {
-                            const testLine = currentLine + (currentLine ? ' ' : '') + word;
-                            const metrics = ctx.measureText(testLine);
-                            
-                            if (metrics.width > maxWidth && currentLine !== '') {
-                                lineCount++;
-                                currentLine = word;
-                            } else {
-                                currentLine = testLine;
-                            }
-                        }
-                        if (currentLine) lineCount++;
-                        return lineCount;
-                    });
-                    
-                    totalHeight = lineCounts.reduce((sum, count) => sum + count * lineHeight, 0) + 
+                    const lineCounts = messages.map(message => breakLines(ctx, message, maxWidth).length);
+
+                    totalHeight = lineCounts.reduce((sum, count) => sum + count * lineHeight, 0) +
                                  (messages.length - 1) * messageSpacing;
                     
                     let currentY = startY - (totalHeight / 2);
@@ -996,6 +980,9 @@
             
             renderCombinationSlots();
             queueRender();
+
+            // 캔버스는 CSS와 달리 폰트 로드를 기다리지 않으므로, 로드 완료 후 한 번 더 그림
+            document.fonts.ready.then(queueRender);
         });
     </script>
 </body>
